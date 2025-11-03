@@ -43,6 +43,35 @@
   </div>
 </section>
 
+</section>
+<hr style="margin:24px 0;">
+<section id="next-section">
+  
+<section id="q1-answer">
+  <h3>Question 1 — Total events in March 2022</h3>
+  <p><strong>Answer:</strong> <strong>1482 events</strong>.</p>
+
+  <h4>How I got it (quick walkthrough)</h4>
+  <ol>
+    <li>Opened <strong>Discover</strong> and selected the <code>connection_logs</code> data view.</li>
+    <li>Set an absolute time range for March:
+      <br/><code>2022-03-01 00:00:00</code> → <code>2022-03-31 00:00:00</code> (end is exclusive).</li>
+    <li>Confirmed no extra filters, then hit <strong>Refresh</strong>.</li>
+    <li>Read the top document count (“Hits”) → <strong>1482</strong>.</li>
+  </ol>
+    <div align="center" style="margin-top:8px;">
+    <img width="2096" height="520" alt="Kibana Discover — March 2022 event count" src="https://github.com/user-attachments/assets/1450cd59-0348-4634-b2a2-8a58ccfe88b3" />
+  </div>
+
+  <h4>Quick checks</h4>
+  <ul>
+    <li>Time zone is correct to avoid off-by-one issues.</li>
+    <li>Sampling is off so the count reflects all documents.</li>
+  </ul>
+  <div align="center" style="margin-top:8px;">
+    <img width="596" height="45" alt="Kibana time range selector — March 2022" src="https://github.com/user-attachments/assets/fdb0da2f-4eac-4619-af0e-1f900f009d5d" />
+  </div>
+</section>
 
 
 
