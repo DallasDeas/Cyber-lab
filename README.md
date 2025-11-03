@@ -13,6 +13,6 @@
 </div>
 
 
-<p> I walk through an investigation of a potential <strong> command-and-control (C2) </strong> communication alert and documented the findings using the ELK stack (Elasticsearch, Logstash, Kibana) </p>
+<p> I walked through an investigation of a potential <strong> command-and-control (C2) </strong> communication alert and documented the findings using the ELK stack (Elasticsearch, Logstash, Kibana) </p>
 
 
