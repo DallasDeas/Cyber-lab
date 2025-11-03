@@ -30,6 +30,20 @@
   </p>
 </section>
 
+</section>
+<hr style="margin:24px 0;">
+<section id="next-section">
+  <p>
+   I went straight to <strong>Discover</strong> because it’s the quickest way to see raw events in
+    <code>connection_logs</code>. From there I can set the time to March 2022 and get the exact
+    document count instantly...no dashboards or saved searches needed. It’s a fast sanity check before any deeper pivots.
+  </p>
+  <div align="center" style="margin-top:8px;">
+    <img width="247" height="441" alt="Kibana Discover view — March 2022 event count" src="https://github.com/user-attachments/assets/e5aa196c-c804-4f3b-8f52-f4b243ef5333" />
+  </div>
+</section>
+
+
 
 
 
