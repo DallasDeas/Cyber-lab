@@ -15,4 +15,6 @@
 
 <p> I walked through an investigation of a potential <strong> command-and-control (C2) </strong> communication alert and documented the findings using the ELK stack (Elasticsearch, Logstash, Kibana) </p>
 
-
+<a href="https://github.com/DallasDeas" target="_blank" rel="noopener noreferrer" style="font-size:24px; font-weight:bold;">
+ELK PROJECT
+</a>
