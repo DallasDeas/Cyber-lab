@@ -74,5 +74,22 @@
 </section>
 
 
+</section>
+<hr style="margin:24px 0;">
+<section id="next-section">
+  
+<section id="q2-answer">
+  <h3>Question 2 — Suspected user’s IP address</h3>
+  
+<h4>How I got it</h4>
+<ol>
+    <li>Stayed in <strong>Discover</strong> on the <code>connection_logs</code> view with March 2022 timeboxed.</li>
+    <li><strong>Filter applied:</strong> The search pill <code>source_ip: 192.166.65.54</code> isolates the suspected host within the March 2022 window.</li>
+    <li><strong>Hits & timeline:</strong> The histogram shows <strong>2 hits</strong> around Mar 10...light activity that fits low-and-slow C2 behavior.</li>
+    <li><strong>Table view:</strong> Columns include <code>source_ip</code> and <code>user_agent</code>; both rows show <code>bitsadmin</code>, used to quietly download files.</li>
+    <li><strong>Next pivot:</strong> From here, I added <code>destination.ip</code> / <code>url</code> to trace where the host connected (used in later questions).</li>
+   <div align="center" style="margin-top:8px;">
+    <img width="1619" height="464" alt="Kibana Discover filtered on source_ip 192.166.65.54" src="https://github.com/user-attachments/assets/47d17d02-a894-436f-8d36-5b229a969b0d" />
+  </div>
 
 
