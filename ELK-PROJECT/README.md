@@ -36,7 +36,7 @@
   <p>
    I went straight to <strong>Discover</strong> because it’s the quickest way to see raw events in
     <code>connection_logs</code>. From there I can set the time to March 2022 and get the exact
-    document count instantly...no dashboards or saved searches needed. It’s a fast sanity check before any deeper pivots.
+    document count instantly...no dashboards or saved searches needed. It’s a fast sanity check before any deeper research.
   </p>
   <div align="center" style="margin-top:8px;">
     <img width="247" height="441" alt="Kibana Discover view — March 2022 event count" src="https://github.com/user-attachments/assets/e5aa196c-c804-4f3b-8f52-f4b243ef5333" />
@@ -111,3 +111,24 @@
     <li><strong>Confirmed reachability:</strong> <code>method: HEAD</code>, <code>status_code: 200</code>, <code>status_msg: OK</code></li>
     <li><strong>Host indicator:</strong> <code>user_agent: bitsadmin</code></li>
   </ul>
+
+</section>
+<hr style="margin:24px 0;">
+<section id="next-section">
+
+<section id="q-file-secret">
+  <p><strong>Question 1:</strong> A file was accessed on the filesharing site. What is the name of the file accessed?<br/>
+   <p><strong>Question 2:</strong> The file contains a secret code with the format <code>THM{_____}</code>. What is the code?<br/>
+   <h4>Evidence</h4>
+  <div align="center" style="margin-top:8px;">
+    <img width="1964" height="584" alt="Event details confirming pastebin URL and file access" src="https://github.com/user-attachments/assets/56e2be3e-41a9-4e03-88a2-92fab3849608" />
+  </div>
+
+  <h4>How I verified it </h4>
+  <p>
+    I reconstructed the URL (<code>https://pastebin.com/Yg0Ah6a</code>) and pasted it into a safe environment.
+    On that page, I saw a reference to <code>secret.txt</code>, opened it, and the flag was inside:
+    <strong>THM{.....} (Cannot publicly post flags)</strong>.
+  </p>
+</section>
+  
