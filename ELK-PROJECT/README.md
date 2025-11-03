@@ -91,5 +91,23 @@
    <div align="center" style="margin-top:8px;">
     <img width="1619" height="464" alt="Kibana Discover filtered on source_ip 192.166.65.54" src="https://github.com/user-attachments/assets/47d17d02-a894-436f-8d36-5b229a969b0d" />
   </div>
-
-
+  
+</section>
+<hr style="margin:24px 0;">
+<section id="next-section">
+  
+<section id="q-filesharing">
+  <h3>Question — Filesharing Site & C2 URL</h3>
+  <p><strong>Question:</strong> What is the name of the filesharing site? What is the full URL of the C2 to which the infected host is connected?</p>
+<p>Using the event detail view in <strong>Discover</strong>, these fields confirmed the filesharing URL.</p>
+ <div align="center" style="margin-top:8px;">
+    <img width="1038" height="681" alt="Kibana — filtering on pastebin.com to find the full URL and file" src="https://github.com/user-attachments/assets/c3d47eac-c079-42c7-ba94-f0190093132a" />
+  </div>
+   <ul>
+    <li><strong>Filesharing site:</strong> <code>host: pastebin.com</code></li>
+    <li><strong>Full URL:</strong> <code>host</code> + <code>URL: /Yg0Ah6a</code> → <code>https://pastebin.com/Yg0Ah6a</code></li>
+    <li><strong>Suspect host:</strong> <code>source_ip: 192.166.65.54</code></li>
+    <li><strong>Destination:</strong> <code>destination_ip: 104.23.99.190</code>, <code>destination_port: 80</code></li>
+    <li><strong>Confirmed reachability:</strong> <code>method: HEAD</code>, <code>status_code: 200</code>, <code>status_msg: OK</code></li>
+    <li><strong>Host indicator:</strong> <code>user_agent: bitsadmin</code></li>
+  </ul>
