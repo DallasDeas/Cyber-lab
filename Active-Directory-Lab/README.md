@@ -55,13 +55,19 @@ environment with a Domain Controller and a domain-joined workstation.
 **Cause:** Hyper-V Secure Boot template was incompatible with the ISO  
 **Fix:** Disabled Secure Boot in VM security settings to allow installation
 
-### Issue 2 — DNS queries timing out between VMs
+### Issue 2 — TPM 2.0 requirement blocking Windows 11 install
+**Symptom:** Setup showed "This PC doesn't meet Windows 11 requirements"  
+**Cause:** Hyper-V VM did not have TPM 2.0 enabled  
+**Fix:** Disabled Secure Boot and enabled Trusted Platform Module (TPM 2.0) 
+in VM Security settings in Hyper-V Manager
+
+### Issue 3 — DNS queries timing out between VMs
 **Symptom:** nslookup lab.local timing out on WS01 despite correct DNS settings  
 **Cause:** DNS service on DC01 was not responding after initial configuration  
 **Fix:** Restarted DNS service on DC01 using Restart-Service DNS in PowerShell. 
 Also disabled Windows Firewall temporarily during initial lab configuration
 
-### Issue 3 — Domain join failing with "DC could not be contacted"
+### Issue 4 — Domain join failing with "DC could not be contacted"
 **Symptom:** WS01 could not find lab.local domain controller  
 **Cause:** DNS was not resolving before DNS service restart  
 **Fix:** Confirmed DNS resolution with nslookup lab.local from WS01 
