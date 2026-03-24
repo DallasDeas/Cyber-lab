@@ -35,6 +35,18 @@ environment with a Domain Controller and a domain-joined workstation.
 - Created domain user accounts in Active Directory
 - Verified domain join via Active Directory Users and Computers
 
+## Screenshots
+
+### Hyper-V Manager — Both VMs Running
+![Hyper-V Manager](Hyper-V-Manager.png)
+
+### Active Directory — WS01 Joined to Domain
+![Computer Container](Computer-Container.png)
+
+### WS01 — Domain Login Screen
+![WS01 Domain Login](WS01-Logged-in.png)
+
+
 ---
 
 ## Troubleshooting Encountered
