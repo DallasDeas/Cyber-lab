@@ -30,7 +30,6 @@ environment with a Domain Controller and a domain-joined workstation.
 - Promoted DC01 to Domain Controller for the lab.local domain
 - Configured DNS on DC01 pointing to itself (127.0.0.1)
 - Deployed Windows 11 Enterprise as a workstation (WS01)
-- Applied TPM bypass via registry edit to install Windows 11 in VM
 - Joined WS01 to the lab.local domain
 - Created domain user accounts in Active Directory
 - Verified domain join via Active Directory Users and Computers
@@ -56,20 +55,13 @@ environment with a Domain Controller and a domain-joined workstation.
 **Cause:** Hyper-V Secure Boot template was incompatible with the ISO  
 **Fix:** Disabled Secure Boot in VM security settings to allow installation
 
-### Issue 2 — TPM 2.0 requirement blocking Windows 11 install
-**Symptom:** Setup showed "This PC doesn't meet Windows 11 requirements"  
-**Cause:** Hyper-V VMs don't have TPM 2.0 by default  
-**Fix:** Used Shift+F10 during setup to open command prompt, launched 
-regedit, created LabConfig key under HKLM\SYSTEM\Setup with 
-BypassTPMCheck and BypassSecureBootCheck values set to 1
-
-### Issue 3 — DNS queries timing out between VMs
+### Issue 2 — DNS queries timing out between VMs
 **Symptom:** nslookup lab.local timing out on WS01 despite correct DNS settings  
 **Cause:** DNS service on DC01 was not responding after initial configuration  
 **Fix:** Restarted DNS service on DC01 using Restart-Service DNS in PowerShell. 
 Also disabled Windows Firewall temporarily during initial lab configuration
 
-### Issue 4 — Domain join failing with "DC could not be contacted"
+### Issue 3 — Domain join failing with "DC could not be contacted"
 **Symptom:** WS01 could not find lab.local domain controller  
 **Cause:** DNS was not resolving before DNS service restart  
 **Fix:** Confirmed DNS resolution with nslookup lab.local from WS01 
