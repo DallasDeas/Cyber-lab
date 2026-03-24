@@ -91,8 +91,8 @@ after DNS restart, then successfully joined domain
 
 ## Next Steps in This Lab
 
-- [ ] Create Organizational Units (OUs) for departments
-- [ ] Create and manage domain user accounts
+- [x] Create Organizational Units (OUs) for departments
+- [x] Create and manage domain user accounts
 - [ ] Implement Group Policy Objects (GPOs)
 - [ ] Map shared network drives via GPO
 - [ ] Practice common help desk tasks — password resets, account lockouts
@@ -100,6 +100,43 @@ after DNS restart, then successfully joined domain
 - [ ] Document PowerShell AD administration commands
 
 ---
+
+## User and Group Management
+
+### What Was Built
+- Created four Organizational Units: IT, HR, Finance, Management
+- Provisioned 5 domain user accounts across department OUs
+- Created security groups: IT-Staff, HR-Staff, Finance-Staff, 
+  Management-Staff, All-Staff
+- Added users to department groups and All-Staff group
+- Practiced core help desk tasks: password resets, account disable/enable
+
+### Screenshots
+
+#### OU Structure
+![OU Structure](OU-Structure.png)
+
+#### All-Staff Group — All Users Across Departments
+![All Staff Group](All-Staff-Group.png)
+
+#### IT-Staff Group — Cross-Department Assignment
+![IT Staff Group](IT-Staff-Group.png)
+
+#### Password Reset — Successful
+![Password Reset](Reset-Password-3.png)
+
+#### Account Disabled
+![Disabled Account](Disabled-Account.png)
+
+#### Password Policy — Default Domain Policy
+![Password Policy](Reset-Password-PasswordPolicy.png)
+
+### Troubleshooting Encountered
+**Issue: Password reset failed — complexity requirements not met**  
+Symptom: "Password does not meet password policy requirements"  
+Cause: Default Domain Policy enforces complexity requirements  
+Fix: Used compliant password. Located policy in Group Policy Management 
+→ Default Domain Policy → Account Policies → Password Policy
 
 ## Skills This Lab Demonstrates
 
