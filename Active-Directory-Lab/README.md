@@ -65,7 +65,7 @@ in VM Security settings in Hyper-V Manager
 **Symptom:** nslookup lab.local timing out on WS01 despite correct DNS settings  
 **Cause:** DNS service on DC01 was not responding after initial configuration  
 **Fix:** Restarted DNS service on DC01 using Restart-Service DNS in PowerShell. 
-Also disabled Windows Firewall temporarily during initial lab configuration
+Also reconfigured Windows Firewall to allow traffic from port 53 (DNS) in Powershell.
 
 ### Issue 4 — Domain join failing with "DC could not be contacted"
 **Symptom:** WS01 could not find lab.local domain controller  
