@@ -93,7 +93,7 @@ after DNS restart, then successfully joined domain
 
 - [x] Create Organizational Units (OUs) for departments
 - [x] Create and manage domain user accounts
-- [ ] Implement Group Policy Objects (GPOs)
+- [x] Implement Group Policy Objects (GPOs)
 - [ ] Map shared network drives via GPO
 - [ ] Practice common help desk tasks — password resets, account lockouts
 - [ ] Add DHCP role to DC01
@@ -137,6 +137,64 @@ Symptom: "Password does not meet password policy requirements"
 Cause: Default Domain Policy enforces complexity requirements  
 Fix: Used compliant password. Located policy in Group Policy Management 
 → Default Domain Policy → Account Policies → Password Policy
+
+## Group Policy Objects (GPOs)
+
+### What Was Built
+- Created and linked three GPOs to the lab.local domain
+- **Lock-Screen-Policy:** Enforces 10-minute screen saver timeout 
+  with password protection on all domain user sessions
+- **Disable-USB-Storage:** Blocks all removable storage device 
+  access via Computer Configuration policy
+- **Corporate-Wallpaper-Policy:** Enforces standard desktop 
+  wallpaper across all domain user sessions
+
+### Verified Via
+- `gpupdate /force` on WS01 to force immediate policy refresh
+- `gpresult /r` to confirm user-side GPO application — confirmed 
+  Lock-Screen-Policy and Corporate-Wallpaper-Policy applied
+- `gpresult /r /scope computer` run as Administrator to confirm 
+  computer-side GPO application; confirmed Disable-USB-Storage applied
+- Visual confirmation of wallpaper change on WS01 after policy refresh
+
+### Troubleshooting Encountered
+**Issue 1: gpresult /r /scope computer returned Access Denied**
+Symptom: Running gpresult /scope computer as dallas.deas 
+returned "ERROR: Access Denied"
+Cause: Even domain admin accounts run with a restricted UAC token 
+by default. Computer-scope policy queries require explicit elevation.
+Fix: Re-ran command prompt as Administrator via right-click 
+"Run as administrator"; command succeeded immediately
+
+**Issue 2: Local account on WS01 did not receive Corporate Wallpaper GPO**
+Symptom: LocalUser account on WS01 showed original wallpaper, 
+not the GPO-enforced wallpaper
+Cause: GPOs only apply to domain accounts. Local accounts exist 
+outside the domain and bypass all domain group policy entirely.
+Resolution: Confirmed expected behavior. GPO applied correctly 
+to domain account LAB\dallas.deas. This highlights why enterprises 
+disable or restrict local accounts on domain-joined machines;
+local accounts can bypass centralized policy enforcement.
+
+### Key Concepts Demonstrated
+- GPO creation and domain-level linking in Group Policy Management
+- User Configuration vs Computer Configuration policy distinction
+- GPO scope — user-side vs computer-side policy application
+- UAC token elevation behavior for domain admin accounts
+- Client-side policy refresh using gpupdate and gpresult
+- Security policy enforcement across domain workstations
+- Why local accounts are restricted in enterprise environments
+
+### Screenshots
+
+#### All Three GPOs Linked to lab.local
+![GPO Overview](GPO-Creation.png)
+
+#### GPResult — User-Side Policies Applied on WS01
+![GPResult User](GPResult.png)
+
+#### GPResult Scope Computer — Disable-USB-Storage Applied
+![GPResult Computer Scope](GPResult-scope.png)
 
 ## Skills This Lab Demonstrates
 
