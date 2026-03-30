@@ -34,17 +34,16 @@ environment with a Domain Controller and a domain-joined workstation.
 - Created domain user accounts in Active Directory
 - Verified domain join via Active Directory Users and Computers
 
-## Screenshots
+### Screenshots
 
-### Hyper-V Manager — Both VMs Running
-![Hyper-V Manager](Hyper-V-Manager.png)
+#### Hyper-V Manager — Both VMs Running
+![Hyper-V Manager](Screenshots/Hyper-V-Manager.png)
 
-### Active Directory — WS01 Joined to Domain
-![Computer Container](Computer-Container.png)
+#### Active Directory — WS01 Joined to Domain
+![Computer Container](Screenshots/Computer-Container.png)
 
-### WS01 — Domain Login Screen
-![WS01 Domain Login](WS01-Logged-in.png)
-
+#### WS01 — Domain Login Screen
+![WS01 Domain Login](Screenshots/WS01-Logged-in.png)
 
 ---
 
@@ -65,7 +64,7 @@ in VM Security settings in Hyper-V Manager
 **Symptom:** nslookup lab.local timing out on WS01 despite correct DNS settings  
 **Cause:** DNS service on DC01 was not responding after initial configuration  
 **Fix:** Restarted DNS service on DC01 using Restart-Service DNS in PowerShell. 
-Also reconfigured Windows Firewall to allow traffic from port 53 (DNS) in Powershell.
+Also reconfigured Windows Firewall to allow traffic from port 53 (DNS) in PowerShell.
 
 ### Issue 4 — Domain join failing with "DC could not be contacted"
 **Symptom:** WS01 could not find lab.local domain controller  
@@ -89,15 +88,14 @@ after DNS restart, then successfully joined domain
 
 ---
 
-## Next Steps in This Lab
+## Lab Progress
 
-- [x] Create Organizational Units (OUs) for departments
-- [x] Create and manage domain user accounts
-- [x] Implement Group Policy Objects (GPOs)
-- [ ] Map shared network drives via GPO
-- [ ] Practice common help desk tasks — password resets, account lockouts
-- [ ] Add DHCP role to DC01
-- [ ] Document PowerShell AD administration commands
+- [x] Deploy Domain Controller and domain-joined workstation
+- [x] Create Organizational Units and user accounts
+- [x] Implement Group Policy Objects
+- [x] Configure shared network drives with group-based permissions
+- [x] Demonstrate RDP remote administration
+- [ ] PowerShell bulk user provisioning (100+ users from CSV)
 
 ---
 
@@ -114,22 +112,22 @@ after DNS restart, then successfully joined domain
 ### Screenshots
 
 #### OU Structure
-![OU Structure](OU-Structure.png)
+![OU Structure](Screenshots/OU-Structure.png)
 
 #### All-Staff Group — All Users Across Departments
-![All Staff Group](All-Staff-Group.png)
+![All Staff Group](Screenshots/All-Staff-Group.png)
 
 #### IT-Staff Group — Cross-Department Assignment
-![IT Staff Group](IT-Staff-Group.png)
+![IT Staff Group](screenshots/IT-Staff-Group.png)
 
 #### Password Reset — Successful
-![Password Reset](Reset-Password-3.png)
+![Password Reset](Screenshots/Reset-Password-3.png)
 
 #### Account Disabled
-![Disabled Account](Disabled-Account.png)
+![Disabled Account](Screenshots/Disabled-Account.png)
 
 #### Password Policy — Default Domain Policy
-![Password Policy](Reset-Password-PasswordPolicy.png)
+![Password Policy](Screenshots/Reset-Password-PasswordPolicy.png)
 
 ### Troubleshooting Encountered
 **Issue: Password reset failed — complexity requirements not met**  
@@ -137,6 +135,8 @@ Symptom: "Password does not meet password policy requirements"
 Cause: Default Domain Policy enforces complexity requirements  
 Fix: Used compliant password. Located policy in Group Policy Management 
 → Default Domain Policy → Account Policies → Password Policy
+
+---
 
 ## Group Policy Objects (GPOs)
 
@@ -158,19 +158,19 @@ Fix: Used compliant password. Located policy in Group Policy Management
 - Visual confirmation of wallpaper change on WS01 after policy refresh
 
 ### Troubleshooting Encountered
-**Issue 1: gpresult /r /scope computer returned Access Denied**
+**Issue 1: gpresult /r /scope computer returned Access Denied**  
 Symptom: Running gpresult /scope computer as dallas.deas 
-returned "ERROR: Access Denied"
+returned "ERROR: Access Denied"  
 Cause: Even domain admin accounts run with a restricted UAC token 
-by default. Computer-scope policy queries require explicit elevation.
+by default. Computer-scope policy queries require explicit elevation.  
 Fix: Re-ran command prompt as Administrator via right-click 
 "Run as administrator"; command succeeded immediately
 
-**Issue 2: Local account on WS01 did not receive Corporate Wallpaper GPO**
+**Issue 2: Local account on WS01 did not receive Corporate Wallpaper GPO**  
 Symptom: LocalUser account on WS01 showed original wallpaper, 
-not the GPO-enforced wallpaper
+not the GPO-enforced wallpaper  
 Cause: GPOs only apply to domain accounts. Local accounts exist 
-outside the domain and bypass all domain group policy entirely.
+outside the domain and bypass all domain group policy entirely.  
 Resolution: Confirmed expected behavior. GPO applied correctly 
 to domain account LAB\dallas.deas. This highlights why enterprises 
 disable or restrict local accounts on domain-joined machines;
@@ -188,13 +188,96 @@ local accounts can bypass centralized policy enforcement.
 ### Screenshots
 
 #### All Three GPOs Linked to lab.local
-![GPO Overview](GPO-Creation.png)
+![GPO Overview](Screenshots/GPO-Creation.png)
 
 #### GPResult — User-Side Policies Applied on WS01
-![GPResult User](GPResult.png)
+![GPResult User](Screenshots/GPResult.png)
 
 #### GPResult Scope Computer — Disable-USB-Storage Applied
-![GPResult Computer Scope](GPResult-scope.png)
+![GPResult Computer Scope](Screenshots/GPResult-scope.png)
+
+---
+
+## Shared Network Drives and Remote Desktop Protocol (RDP)
+
+### What Was Built
+- Created three shared folders on DC01: IT, HR, and AllStaff 
+  located at C:\Shares
+- Configured share-level permissions restricting access by 
+  security group — IT-Staff for IT share, HR-Staff for HR share, 
+  All-Staff for AllStaff share
+- Created Drive-Mapping-Policy GPO using Group Policy Preferences 
+  with item-level targeting to automatically map drives based on 
+  group membership:
+  - Z: AllStaff mapped to all staff members
+  - Y: IT mapped to IT-Staff group members only
+  - X: HR mapped to HR-Staff group members only
+- Enabled Remote Desktop Protocol on WS01 and added Domain Admin 
+  to Remote Desktop Users group
+- Demonstrated RDP remote administration by connecting from DC01 
+  to WS01 using `mstsc`
+
+### Verified Via
+- net share command on DC01 confirming all three shares active
+- Logged in as dallas.deas — confirmed IT (Y:) and AllStaff (Z:) 
+  mapped correctly based on group membership
+- Logged in as sarah.johnson — confirmed HR (X:) and AllStaff (Z:) 
+  mapped correctly, IT drive not present as expected
+- RDP session established from DC01 to WS01 at 192.168.10.20
+
+### Troubleshooting Encountered
+**Issue 1: Drive mapping GPO applied but drives not appearing**  
+Symptom: gpresult showed Drive-Mapping-Policy applied but no 
+network drives appeared in File Explorer  
+Cause: dallas.deas was not a member of All-Staff or IT-Staff. 
+Item-level targeting requires group membership to map drives.  
+Fix: Added dallas.deas to All-Staff and IT-Staff groups in AD. 
+Logged off and back in — drives appeared immediately.
+
+**Issue 2: Domain Admins denied access to HR share**  
+Symptom: Accessing \\DC01\HR returned "You do not have permission"  
+Cause: Share permissions only granted HR-Staff access. Domain Admins 
+were not explicitly added to share-level permissions.  
+Fix: Added Domain Admins to HR share permissions with Full Control. 
+This highlighted the difference between share permissions and NTFS 
+permissions — two separate security layers in Windows.
+
+**Issue 3: DC01 dependency learned**  
+Observation: When DC01 was powered off, WS01 could not resolve the 
+domain, apply GPOs, map drives, or authenticate domain users.  
+Resolution: DC01 must always be running before WS01. In production 
+environments this is solved with redundant domain controllers so no 
+single DC going offline takes down the entire domain.
+
+### Key Concepts Demonstrated
+- Network share creation and share-level permission configuration
+- Group Policy Preferences for drive mapping automation
+- Item-level targeting for group-based drive assignment
+- Domain Controller dependency in Active Directory environments
+- RDP configuration and remote workstation administration
+- Domain Users group management for session access control
+
+### Screenshots
+
+#### Shared Folders Created on DC01
+![Shares Created](Screenshots/Shares-Created.png)
+
+#### Net Share — Confirming Active Shares
+![Net Share](Screenshots/Net-Share.png)
+
+#### Drive Mapping GPO — Three Drives Configured
+![Drive Mapping GPO](Screenshots/Drive-Mapping-GPO.png)
+
+#### Sarah Johnson — HR and AllStaff Drives Only
+![Sarah Johnson Drives](Screenshots/Sarah-Johnson-Drives.png)
+
+#### RDP Connection Initiated from DC01 to WS01
+![RDP Connection](Screenshots/RDP-Connection.png)
+
+#### Active RDP Session — WS01 Remotely Administered from DC01
+![RDP Session](Screenshots/RDP.png)
+
+---
 
 ## Skills This Lab Demonstrates
 
@@ -206,4 +289,7 @@ NOC Technician, Junior SysAdmin roles
 - DNS troubleshooting
 - Network configuration
 - VM deployment and management
+- Group Policy administration
+- Network share and permissions management
+- Remote Desktop Protocol administration
 - Technical troubleshooting and documentation
