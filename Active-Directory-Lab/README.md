@@ -118,7 +118,7 @@ after DNS restart, then successfully joined domain
 ![All Staff Group](Screenshots/All-Staff-Group.png)
 
 #### IT-Staff Group — Cross-Department Assignment
-![IT Staff Group](screenshots/IT-Staff-Group.png)
+![IT Staff Group](Screenshots/IT-Staff-Group.png)
 
 #### Password Reset — Successful
 ![Password Reset](Screenshots/Reset-Password-3.png)
