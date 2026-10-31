@@ -1,295 +1,214 @@
-# Active Directory Home Lab
+# Active Directory and Windows Administration Lab
 
-## Overview
-Designed and deployed a virtualized Active Directory environment from scratch 
-using Hyper-V on Windows 11 Pro. This lab simulates a real enterprise 
-environment with a Domain Controller and a domain-joined workstation.
+**Hyper-V · Windows Server 2022 · Windows 11 · AD DS · DNS · Group Policy · SMB · RDP**
 
----
+[Back to project overview](../README.md)
 
-## Lab Architecture
-
-| VM | Role | OS | IP Address |
-|---|---|---|---|
-| DC01 | Domain Controller / DNS Server | Windows Server 2022 Standard | 192.168.10.10 |
-| WS01 | Domain-Joined Workstation | Windows 11 Enterprise | 192.168.10.20 |
+## Project overview
 
-**Hypervisor:** Microsoft Hyper-V (built into Windows 11 Pro)  
-**Virtual Switch:** Internal switch (LabNetwork) — isolated lab network  
-**Domain:** lab.local  
+I built this lab to practice the Windows administration tasks behind user access, workstation configuration, and shared resources. I started with a domain controller and a workstation, then added department users, security groups, Group Policy, shared drives, and remote administration.
 
----
+The build gave me a place to troubleshoot the dependencies between those services. When a domain join or drive mapping failed, I worked through DNS, policy results, group membership, and permissions instead of repeatedly changing the same setting.
 
-## What Was Built
+## Architecture
 
-- Enabled Hyper-V on Windows 11 Pro host machine
-- Created an internal virtual switch (LabNetwork) to isolate lab traffic
-- Deployed Windows Server 2022 as a Domain Controller (DC01)
-- Configured static IP addressing on both VMs
-- Installed Active Directory Domain Services (AD DS)
-- Promoted DC01 to Domain Controller for the lab.local domain
-- Configured DNS on DC01 pointing to itself (127.0.0.1)
-- Deployed Windows 11 Enterprise as a workstation (WS01)
-- Joined WS01 to the lab.local domain
-- Created domain user accounts in Active Directory
-- Verified domain join via Active Directory Users and Computers
+```mermaid
+flowchart TD
+    H["Windows 11 Pro host: Hyper-V"] --> S["Internal virtual switch"]
+    S --> D["Windows Server 2022: AD DS and DNS"]
+    S --> W["Windows 11 Enterprise workstation"]
+    D --> P["Users, groups and Group Policy"]
+    D --> F["IT, HR and AllStaff shares"]
+    P --> W
+    F --> W
+```
 
-### Screenshots
+| Component | Role in my lab |
+|---|---|
+| Windows 11 Pro host | Ran Hyper-V and the two virtual machines |
+| Internal virtual switch | Connected the host and VMs on the lab network |
+| Windows Server 2022 Standard VM | Hosted AD DS, DNS, and shared folders |
+| Windows 11 Enterprise VM | Joined the domain and provided the user-session test environment |
+| Department groups | Controlled drive targeting and share access |
 
-#### Hyper-V Manager — Both VMs Running
-![Hyper-V Manager](Screenshots/Hyper-V-Manager.png)
+I used static addressing and a lab domain. The server combined domain and file services in this small environment, which also made its availability a shared dependency.
 
-#### Active Directory — WS01 Joined to Domain
-![Computer Container](Screenshots/Computer-Container.png)
+## What I implemented and checked
 
-#### WS01 — Domain Login Screen
-![WS01 Domain Login](Screenshots/WS01-Logged-in.png)
+| Area | Work completed | Validation |
+|---|---|---|
+| Domain foundation | Installed AD DS, promoted the server, configured DNS, and joined the workstation | Computer account and domain login captures |
+| Identity administration | Created four department OUs, five users, department security groups, and an All-Staff group | OU and membership captures |
+| Account support | Practiced password resets and account disable/enable tasks | Reset, password-policy, and disabled-account evidence |
+| Group Policy | Configured screen-saver lock, wallpaper, and removable-storage policies | User and computer policy results |
+| Shared resources | Created three shares and group-targeted drive mappings | Share listing, drive preferences, and a department user session |
+| Remote administration | Enabled RDP on the workstation and connected from the server | Connection and established-session captures |
 
----
+## 1. Build the domain foundation
 
-## Troubleshooting Encountered
+I enabled Hyper-V, created the internal switch, and installed the server and workstation VMs. On the server, I installed Active Directory Domain Services and promoted it to a domain controller. I then configured the workstation to use the lab DNS service and joined it to the domain.
 
-### Issue 1 — Secure Boot blocking Windows 11 ISO
-**Symptom:** VM showed "signed image hash not allowed" error on boot  
-**Cause:** Hyper-V Secure Boot template was incompatible with the ISO  
-**Fix:** Disabled Secure Boot in VM security settings to allow installation
+DNS became the first practical troubleshooting lesson. The workstation could not locate the domain controller while name resolution was failing. After restarting the server's DNS service and adjusting the DNS firewall allowance, I checked resolution again before retrying the join.
 
-### Issue 2 — TPM 2.0 requirement blocking Windows 11 install
-**Symptom:** Setup showed "This PC doesn't meet Windows 11 requirements"  
-**Cause:** Hyper-V VM did not have TPM 2.0 enabled  
-**Fix:** Disabled Secure Boot and enabled Trusted Platform Module (TPM 2.0) 
-in VM Security settings in Hyper-V Manager
-
-### Issue 3 — DNS queries timing out between VMs
-**Symptom:** nslookup lab.local timing out on WS01 despite correct DNS settings  
-**Cause:** DNS service on DC01 was not responding after initial configuration  
-**Fix:** Restarted DNS service on DC01 using Restart-Service DNS in PowerShell. 
-Also reconfigured Windows Firewall to allow traffic from port 53 (DNS) in PowerShell.
-
-### Issue 4 — Domain join failing with "DC could not be contacted"
-**Symptom:** WS01 could not find lab.local domain controller  
-**Cause:** DNS was not resolving before DNS service restart  
-**Fix:** Confirmed DNS resolution with nslookup lab.local from WS01 
-after DNS restart, then successfully joined domain
-
----
-
-## Key Concepts Demonstrated
-
-- Hypervisor deployment and VM provisioning
-- Active Directory Domain Services installation and configuration
-- Domain Controller promotion
-- DNS configuration for AD environments
-- Static IP addressing in a lab network
-- Domain join process and authentication
-- Troubleshooting DNS resolution failures
-- Windows Firewall management
-- Registry editing for OS compatibility
-
----
-
-## Lab Progress
-
-- [x] Deploy Domain Controller and domain-joined workstation
-- [x] Create Organizational Units and user accounts
-- [x] Implement Group Policy Objects
-- [x] Configure shared network drives with group-based permissions
-- [x] Demonstrate RDP remote administration
-- [ ] PowerShell bulk user provisioning (100+ users from CSV)
-
----
-
-## User and Group Management
-
-### What Was Built
-- Created four Organizational Units: IT, HR, Finance, Management
-- Provisioned 5 domain user accounts across department OUs
-- Created security groups: IT-Staff, HR-Staff, Finance-Staff, 
-  Management-Staff, All-Staff
-- Added users to department groups and All-Staff group
-- Practiced core help desk tasks: password resets, account disable/enable
-
-### Screenshots
-
-#### OU Structure
-![OU Structure](Screenshots/OU-Structure.png)
-
-#### All-Staff Group — All Users Across Departments
-![All Staff Group](Screenshots/All-Staff-Group.png)
-
-#### IT-Staff Group — Cross-Department Assignment
-![IT Staff Group](Screenshots/IT-Staff-Group.png)
-
-#### Password Reset — Successful
-![Password Reset](Screenshots/Reset-Password-3.png)
-
-#### Account Disabled
-![Disabled Account](Screenshots/Disabled-Account.png)
-
-#### Password Policy — Default Domain Policy
-![Password Policy](Screenshots/Reset-Password-PasswordPolicy.png)
-
-### Troubleshooting Encountered
-**Issue: Password reset failed — complexity requirements not met**  
-Symptom: "Password does not meet password policy requirements"  
-Cause: Default Domain Policy enforces complexity requirements  
-Fix: Used compliant password. Located policy in Group Policy Management 
-→ Default Domain Policy → Account Policies → Password Policy
-
----
-
-## Group Policy Objects (GPOs)
-
-### What Was Built
-- Created and linked three GPOs to the lab.local domain
-- **Lock-Screen-Policy:** Enforces 10-minute screen saver timeout 
-  with password protection on all domain user sessions
-- **Disable-USB-Storage:** Blocks all removable storage device 
-  access via Computer Configuration policy
-- **Corporate-Wallpaper-Policy:** Enforces standard desktop 
-  wallpaper across all domain user sessions
-
-### Verified Via
-- `gpupdate /force` on WS01 to force immediate policy refresh
-- `gpresult /r` to confirm user-side GPO application — confirmed 
-  Lock-Screen-Policy and Corporate-Wallpaper-Policy applied
-- `gpresult /r /scope computer` run as Administrator to confirm 
-  computer-side GPO application; confirmed Disable-USB-Storage applied
-- Visual confirmation of wallpaper change on WS01 after policy refresh
-
-### Troubleshooting Encountered
-**Issue 1: gpresult /r /scope computer returned Access Denied**  
-Symptom: Running gpresult /scope computer as dallas.deas 
-returned "ERROR: Access Denied"  
-Cause: Even domain admin accounts run with a restricted UAC token 
-by default. Computer-scope policy queries require explicit elevation.  
-Fix: Re-ran command prompt as Administrator via right-click 
-"Run as administrator"; command succeeded immediately
-
-**Issue 2: Local account on WS01 did not receive Corporate Wallpaper GPO**  
-Symptom: LocalUser account on WS01 showed original wallpaper, 
-not the GPO-enforced wallpaper  
-Cause: GPOs only apply to domain accounts. Local accounts exist 
-outside the domain and bypass all domain group policy entirely.  
-Resolution: Confirmed expected behavior. GPO applied correctly 
-to domain account LAB\dallas.deas. This highlights why enterprises 
-disable or restrict local accounts on domain-joined machines;
-local accounts can bypass centralized policy enforcement.
-
-### Key Concepts Demonstrated
-- GPO creation and domain-level linking in Group Policy Management
-- User Configuration vs Computer Configuration policy distinction
-- GPO scope — user-side vs computer-side policy application
-- UAC token elevation behavior for domain admin accounts
-- Client-side policy refresh using gpupdate and gpresult
-- Security policy enforcement across domain workstations
-- Why local accounts are restricted in enterprise environments
-
-### Screenshots
-
-#### All Three GPOs Linked to lab.local
-![GPO Overview](Screenshots/GPO-Creation.png)
-
-#### GPResult — User-Side Policies Applied on WS01
-![GPResult User](Screenshots/GPResult.png)
-
-#### GPResult Scope Computer — Disable-USB-Storage Applied
-![GPResult Computer Scope](Screenshots/GPResult-scope.png)
-
----
-
-## Shared Network Drives and Remote Desktop Protocol (RDP)
-
-### What Was Built
-- Created three shared folders on DC01: IT, HR, and AllStaff 
-  located at C:\Shares
-- Configured share-level permissions restricting access by 
-  security group — IT-Staff for IT share, HR-Staff for HR share, 
-  All-Staff for AllStaff share
-- Created Drive-Mapping-Policy GPO using Group Policy Preferences 
-  with item-level targeting to automatically map drives based on 
-  group membership:
-  - Z: AllStaff mapped to all staff members
-  - Y: IT mapped to IT-Staff group members only
-  - X: HR mapped to HR-Staff group members only
-- Enabled Remote Desktop Protocol on WS01 and added Domain Admin 
-  to Remote Desktop Users group
-- Demonstrated RDP remote administration by connecting from DC01 
-  to WS01 using `mstsc`
-
-### Verified Via
-- net share command on DC01 confirming all three shares active
-- Logged in as dallas.deas — confirmed IT (Y:) and AllStaff (Z:) 
-  mapped correctly based on group membership
-- Logged in as sarah.johnson — confirmed HR (X:) and AllStaff (Z:) 
-  mapped correctly, IT drive not present as expected
-- RDP session established from DC01 to WS01 at 192.168.10.20
-
-### Troubleshooting Encountered
-**Issue 1: Drive mapping GPO applied but drives not appearing**  
-Symptom: gpresult showed Drive-Mapping-Policy applied but no 
-network drives appeared in File Explorer  
-Cause: dallas.deas was not a member of All-Staff or IT-Staff. 
-Item-level targeting requires group membership to map drives.  
-Fix: Added dallas.deas to All-Staff and IT-Staff groups in AD. 
-Logged off and back in — drives appeared immediately.
-
-**Issue 2: Domain Admins denied access to HR share**  
-Symptom: Accessing \\DC01\HR returned "You do not have permission"  
-Cause: Share permissions only granted HR-Staff access. Domain Admins 
-were not explicitly added to share-level permissions.  
-Fix: Added Domain Admins to HR share permissions with Full Control. 
-This highlighted the difference between share permissions and NTFS 
-permissions — two separate security layers in Windows.
-
-**Issue 3: DC01 dependency learned**  
-Observation: When DC01 was powered off, WS01 could not resolve the 
-domain, apply GPOs, map drives, or authenticate domain users.  
-Resolution: DC01 must always be running before WS01. In production 
-environments this is solved with redundant domain controllers so no 
-single DC going offline takes down the entire domain.
-
-### Key Concepts Demonstrated
-- Network share creation and share-level permission configuration
-- Group Policy Preferences for drive mapping automation
-- Item-level targeting for group-based drive assignment
-- Domain Controller dependency in Active Directory environments
-- RDP configuration and remote workstation administration
-- Domain Users group management for session access control
-
-### Screenshots
-
-#### Shared Folders Created on DC01
-![Shares Created](Screenshots/Shares-Created.png)
-
-#### Net Share — Confirming Active Shares
-![Net Share](Screenshots/Net-Share.png)
-
-#### Drive Mapping GPO — Three Drives Configured
-![Drive Mapping GPO](Screenshots/Drive-Mapping-GPO.png)
-
-#### Sarah Johnson — HR and AllStaff Drives Only
-![Sarah Johnson Drives](Screenshots/Sarah-Johnson-Drives.png)
-
-#### RDP Connection Initiated from DC01 to WS01
-![RDP Connection](Screenshots/RDP-Connection.png)
-
-#### Active RDP Session — WS01 Remotely Administered from DC01
-![RDP Session](Screenshots/RDP.png)
-
----
-
-## Skills This Lab Demonstrates
-
-**Relevant to:** Help Desk, Desktop Support, Systems Administrator, 
-NOC Technician, Junior SysAdmin roles
-
-- Windows Server administration
-- Active Directory management
-- DNS troubleshooting
-- Network configuration
-- VM deployment and management
-- Group Policy administration
-- Network share and permissions management
-- Remote Desktop Protocol administration
-- Technical troubleshooting and documentation
+<details>
+<summary>Evidence: virtual machines, domain membership, and sign-in</summary>
+
+![Hyper-V Manager with the lab VMs](Screenshots/Hyper-V-Manager.png)
+
+I used Hyper-V Manager to check the VM states before testing services inside them.
+
+![Workstation computer account](Screenshots/Computer-Container.png)
+
+The computer account records the workstation's presence in Active Directory.
+
+![Workstation domain login](Screenshots/WS01-Logged-in.png)
+
+The workstation capture documents the login stage of the domain setup.
+
+</details>
+
+## 2. Organize users and access groups
+
+I created IT, HR, Finance, and Management OUs, then provisioned five user accounts. I used department groups and an All-Staff group to organize membership for shared resources.
+
+I also practiced password resets and account state changes. A rejected password reset led me to check the Default Domain Policy and use a password that met the configured requirements.
+
+<details>
+<summary>Evidence: identity structure and account administration</summary>
+
+![Department OU structure](Screenshots/OU-Structure.png)
+
+The OU structure organizes the department accounts.
+
+![All-Staff membership](Screenshots/All-Staff-Group.png)
+
+The All-Staff group provides a common membership target.
+
+![IT-Staff membership](Screenshots/IT-Staff-Group.png)
+
+I checked group membership because it later affected drive targeting and access.
+
+![Password reset result](Screenshots/Reset-Password-3.png)
+
+The reset capture records the account-support task.
+
+![Disabled account](Screenshots/Disabled-Account.png)
+
+I practiced disabling an account as part of account lifecycle administration.
+
+![Domain password policy](Screenshots/Reset-Password-PasswordPolicy.png)
+
+I inspected the configured policy after the password reset was rejected.
+
+</details>
+
+## 3. Apply and validate Group Policy
+
+I created three policies: a 10-minute password-protected screen-saver policy, a corporate wallpaper policy, and a removable-storage restriction. I refreshed policy on the workstation and checked the user and computer scopes separately.
+
+```powershell
+gpupdate /force
+gpresult /r
+gpresult /r /scope computer
+```
+
+The computer-scope query initially returned Access Denied. Running the command prompt as Administrator allowed the query to complete.
+
+The local-account wallpaper test also helped me understand scope. The domain user's wallpaper setting applied in the domain session. A local user did not receive that same user-targeted setting. Computer Configuration policies still apply to the domain-joined computer; a local sign-in is not a general bypass of domain policy. [Microsoft's Group Policy overview](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview).
+
+<details>
+<summary>Evidence: policy configuration and results</summary>
+
+![Linked Group Policy Objects](Screenshots/GPO-Creation.png)
+
+The management view records the configured policies and their links.
+
+![User policy results](Screenshots/GPResult.png)
+
+I checked the applied user policies after refreshing the workstation.
+
+![Computer policy results](Screenshots/GPResult-scope.png)
+
+The elevated computer-scope result lists Disable-USB-Storage as applied. A removable-device test would provide a separate check of the resulting behavior.
+
+</details>
+
+## 4. Configure department shares and drive mappings
+
+I created IT, HR, and AllStaff shares on the server and configured share permissions around the corresponding security groups. I then used Group Policy Preferences with item-level targeting to map drives by group membership.
+
+| Drive | Share | Intended membership |
+|---|---|---|
+| X: | HR | HR-Staff |
+| Y: | IT | IT-Staff |
+| Z: | AllStaff | All-Staff |
+
+The policy initially appeared in the workstation's results, but the expected drives were missing. I checked the account's group membership, added the missing memberships, then signed out and back in. The drives appeared in the refreshed session.
+
+![Configured drive mappings](Screenshots/Drive-Mapping-GPO.png)
+
+The preferences define the three drive letters and share paths.
+
+![Department user session with HR and AllStaff drives](Screenshots/Sarah-Johnson-Drives.png)
+
+The department user session shows HR and AllStaff, with no IT drive displayed. That validates the visible mapping result. Direct share-access testing is a separate check of authorization.
+
+<details>
+<summary>Additional evidence: share creation and server-side listing</summary>
+
+![Shared folders on the server](Screenshots/Shares-Created.png)
+
+I created the folders before configuring the drive mappings.
+
+![Net share output](Screenshots/Net-Share.png)
+
+The server-side share listing confirmed the published shares.
+
+</details>
+
+## 5. Test remote administration
+
+I enabled RDP on the workstation, configured access, and connected from the server using `mstsc`. This let me practice administering the workstation through a remote session.
+
+<details>
+<summary>Evidence: RDP connection and session</summary>
+
+![RDP connection setup](Screenshots/RDP-Connection.png)
+
+The connection capture records the remote-access setup.
+
+![Established RDP session](Screenshots/RDP.png)
+
+The session capture documents remote workstation access.
+
+</details>
+
+## Troubleshooting record
+
+| Problem | What I changed or checked | Result and lesson |
+|---|---|---|
+| Windows installation failed at boot or requirements checks | Adjusted VM security settings and enabled the virtual TPM; my original build notes also record disabling Secure Boot | Installation proceeded. For a rebuild, I would verify the installation media and Secure Boot template before changing that protection |
+| DNS queries timed out and domain join failed | Restarted DNS, adjusted the DNS firewall allowance, and checked resolution from the workstation | The domain join succeeded after name resolution was restored |
+| Password reset was rejected | Reviewed the domain password policy and supplied a compliant password | The reset succeeded |
+| Computer-scope policy query returned Access Denied | Opened an elevated command prompt | The query returned the applied computer policies |
+| Drive policy applied but drives were missing | Corrected group membership and started a new user session | The expected mappings appeared |
+| Administrative account could not access the HR share | Reviewed the share permissions and added the administrative group in this lab | Access was restored. Share permissions and NTFS permissions both need review when investigating effective access |
+| Domain and share services were unavailable with the server powered off | Brought the server online before repeating the dependent checks | The lab had one server providing DNS, directory, policy, and file services |
+
+The server-off test showed the dependency on live domain services and server-hosted shares. Windows can also allow cached domain sign-in, depending on prior logons and configuration, so I distinguish local sign-in from access to resources that require domain validation. [Microsoft's cached domain logon guidance](https://learn.microsoft.com/en-us/troubleshoot/windows-server/user-profiles-and-logon/cached-domain-logon-information).
+
+## What I learned
+
+The biggest lesson was to check the result at the layer where the problem appeared. A successful policy refresh did not guarantee that a drive preference matched the user. A computer account in Active Directory did not replace testing the workstation session. An administrative account still needed the appropriate share access.
+
+These checks gave me a more deliberate workflow for support and systems troubleshooting: confirm the dependency, inspect the applied configuration, test the user-visible result, and record the change that resolved the issue.
+
+## Next validation steps
+
+- Add CSV-based bulk user provisioning with PowerShell.
+- Test allowed and denied direct share access with standard department accounts.
+- Test removable-storage behavior alongside the policy-result evidence.
+- Separate routine administration from privileged accounts and narrow permissions.
+- Add a second domain controller and test directory/DNS availability separately from file-share availability.
+
+[Back to project overview](../README.md) · [ELK investigation](../ELK-PROJECT/README.md)
