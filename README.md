@@ -1,15 +1,16 @@
-# Cybersecurity and Windows Systems Labs
+# Cybersecurity, Windows Systems, and Azure Labs
 
-**Active Directory · Windows Server · Hyper-V · Group Policy · Kibana · Log analysis**
+**Active Directory · Windows Server · Hyper-V · Microsoft Entra ID · Azure RBAC · Kibana · Log analysis**
 
-I use this repository to document how I build Windows environments and investigate activity in security logs. These projects cover two parts of the work: understanding how a system is configured, and using evidence to explain what happened when something needs attention.
+I use this repository to document how I build Windows environments, organize cloud access, and investigate activity in security logs. These projects connect system configuration, identity administration, and evidence-based troubleshooting.
 
-The Active Directory lab follows a Windows domain from deployment through user administration, policy validation, shared drives, and remote access. The ELK investigation follows a suspicious connection from the initial log search to the relevant host, destination, and request details.
+The Active Directory lab follows a Windows domain from deployment through user administration, policy validation, shared drives, and remote access. The Azure lab covers cloud users, security groups, scoped role assignments, and subscription budgeting. The ELK investigation follows a suspicious connection from the initial log search to the relevant host, destination, and request details.
 
 ## Projects at a glance
 
 | Project | What I worked on | Where to start |
 |---|---|---|
+| **Azure identity and governance** | Organized cloud users and security groups, assigned resource-group roles, reviewed inherited access, and configured a monthly budget | [Identity and access walkthrough](Azure-Identity-Governance/README.md) |
 | **Active Directory and Windows administration** | Built a two-VM domain, managed users and groups, applied Group Policy, configured department shares, and troubleshot DNS and access problems | [Build and troubleshooting walkthrough](Active-Directory-Lab/README.md) |
 | **ELK suspicious connection investigation** | Used Kibana to narrow HTTP logs, inspect a suspicious user-agent, and document the destination and response associated with a training alert | [Investigation report](ELK-PROJECT/README.md) |
 
@@ -28,6 +29,14 @@ The useful part was working through the failures. DNS problems prevented the dom
 | Remote administration | RDP connection and established session |
 
 [Read the Active Directory lab →](Active-Directory-Lab/README.md)
+
+## Azure: organize identities and scope access
+
+I created Entra ID accounts and security groups for administration, VM operations, and read-only review. I assigned Reader and Virtual Machine Contributor at the resource-group level, then checked the IAM scope column to distinguish those assignments from inherited subscription access.
+
+I also configured a $25 monthly budget with actual-cost thresholds at 50%, 80%, and 100%. The walkthrough includes five screenshots, an architecture diagram, and a short recorded RBAC review.
+
+[Read the Azure lab →](Azure-Identity-Governance/README.md)
 
 ## ELK: investigate a suspicious connection
 
@@ -51,6 +60,8 @@ In my [Infrastructure Monitoring and Incident Investigation Lab](https://github.
 
 ## Repository guide
 
+- [Azure identity and governance](Azure-Identity-Governance/README.md): architecture, users, groups, role assignments, and budget configuration.
+- [Azure screenshots](Azure-Identity-Governance/Screenshots): five supporting captures.
 - [Active Directory walkthrough](Active-Directory-Lab/README.md): architecture, build sequence, validation, and troubleshooting.
 - [Active Directory screenshots](Active-Directory-Lab/Screenshots): the original supporting captures.
 - [ELK investigation](ELK-PROJECT/README.md): scope, search process, findings, and annotated evidence.
